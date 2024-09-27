@@ -1,5 +1,5 @@
 # Docker Web Server (Nginx + Multiple PHP)
-Bu proje, yerel ortamda Nginx ve farklı PHP sürümlerinin çalıştırılmasını sağlar. Nginx, 89 numaralı portta çalışır ve hem PHP 7.4 hem de PHP 8.2 sürümlerini içerir.
+Bu proje, yerel ortamda Nginx ve farklı PHP sürümlerinin çalıştırılmasını sağlar. Nginx, env dosyasında tanımlanan NGINX_PORT numaralı portta çalışır ve hem PHP 7.4 hem de PHP 8.2 sürümlerini içerir.
 
 ## Kurulum
 Kurulum için proje klasöründeki install klasöründe aşağıdaki komutu çalıştırın:

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+export $(grep -v '^#' .env | xargs)
+
 read -p "New domain name (e.g., local.myquiz): " domain
 read -p "Please select the PHP version (7.4 or 8.2): " php_version
 
@@ -48,7 +50,7 @@ docker compose restart webserver
 
 echo "'$domain' has been successfully added and configured with PHP '$php_version'"
 
-echo "You can access it at 'http://$domain:89'"
+echo "You can access it at 'http://$domain:$NGINX_PORT'"
 
 full_domain_conf_file=$(realpath "$domain_conf_file")
 echo "You can make the relevant updates in the '$full_domain_conf_file'"

@@ -15,7 +15,17 @@ services:
       - ./nginx/common.conf:/etc/nginx/common.conf
       - ./nginx/conf.d:/etc/nginx/conf.d
     ports:
-      - "89:80"
+      - "${NGINX_PORT}:80"
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql8db
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    ports:
+      - "${MYSQL_PORT}:3306"
+    volumes:
+      - ../mysql_data:/var/lib/mysql
   
   phpfpm74:
     build:
