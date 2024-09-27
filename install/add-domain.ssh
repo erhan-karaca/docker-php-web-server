@@ -1,0 +1,54 @@
+#!/bin/bash
+
+read -p "New domain name (e.g., local.myquiz): " domain
+read -p "Please select the PHP version (7.4 or 8.2): " php_version
+
+if [[ "$php_version" == "7.4" ]]; then
+    php_version="fastcgi_backend74"
+elif [[ "$php_version" == "8.2" ]]; then
+    php_version="fastcgi_backend82"
+else
+    echo "Invalid PHP version. Please enter 7.4 or 8.2"
+    exit 1
+fi
+
+echo "Selected FastCGI backend: $php_version"
+
+nginx_conf_dir="nginx/conf.d"
+nginx_conf_file="$nginx_conf_dir/$domain.conf"
+
+cat > $nginx_conf_file <<EOL
+server {
+    listen 80;
+    listen [::]:80 ;
+    server_name $domain;
+
+    set \$APP_ROOT /var/www/$domain;
+    set \$APP_DOMAIN $domain;
+    set \$APP_FASTCGI_PASS $php_version;
+    error_log /var/log/$domain-error.log error;
+    access_log /var/log/$domain-access.log;
+    include /etc/nginx/common.conf;
+}
+EOL
+
+domain_conf_dir="../www/$domain"
+domain_conf_file="$domain_conf_dir/index.php"
+
+mkdir -p $domain_conf_dir
+
+cat > $domain_conf_file <<EOL
+<?php echo "$domain server is running...";
+EOL
+
+echo "127.0.0.1 $domain" | sudo tee -a /etc/hosts > /dev/null
+echo "'$domain' added to the hosts file."
+
+docker compose restart webserver
+
+echo "'$domain' has been successfully added and configured with PHP '$php_version'"
+
+echo "You can access it at 'http://$domain:89'"
+
+full_domain_conf_file=$(realpath "$domain_conf_file")
+echo "You can make the relevant updates in the '$full_domain_conf_file'"

@@ -1,0 +1,55 @@
+services:
+  webserver:
+    depends_on:
+      - phpfpm74
+      - phpfpm82
+    networks:
+      - pai-tier
+    image: nginx:alpine
+    container_name: webserver
+    environment:
+      - TZ=Europe/Istanbul
+    working_dir: /var/www/
+    volumes:
+      - ../www:/var/www:delegated
+      - ./nginx/common.conf:/etc/nginx/common.conf
+      - ./nginx/conf.d:/etc/nginx/conf.d
+    ports:
+      - "89:80"
+  
+  phpfpm74:
+    build:
+      context: .
+      dockerfile: phpfpm/7.4/Dockerfile
+      args:
+        USER_ID: 1000
+        GROUP_ID: 1000
+    container_name: phpfpm74
+    environment:
+      - TZ=Europe/Istanbul
+    working_dir: /var/www
+    volumes:
+      - ../www:/var/www
+      - ~/.composer/docker-cache/:/home-www-data/.composer:delegated
+    networks:
+      - pai-tier
+
+  phpfpm82:
+    build:
+      context: .
+      dockerfile: phpfpm/8.2/Dockerfile
+      args:
+        USER_ID: 1000
+        GROUP_ID: 1000
+    container_name: phpfpm82
+    environment:
+      - TZ=Europe/Istanbul
+    working_dir: /var/www
+    volumes:
+      - ../www:/var/www
+      - ~/.composer/docker-cache/:/home-www-data/.composer:delegated
+    networks:
+      - pai-tier
+
+networks:
+  pai-tier:
